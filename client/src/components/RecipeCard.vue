@@ -1,18 +1,22 @@
 <template>
-  <div class="card" @click="router.push(`/recipes/${recipe.id}`)">
-    <div class="photo" :style="photoStyle">
+  <div class="card" :class="{ 'card-list': listMode }" @click="router.push(`/recipes/${recipe.id}`)">
+    <div v-if="!listMode" class="photo" :style="photoStyle">
       <span v-if="!recipe.samplePhotoPath" class="no-photo">No photo</span>
     </div>
 
     <div class="body">
-      <div class="header-row">
-        <span class="name">{{ recipe.name }}</span>
-        <span class="scenario-badge">{{ scenarioLabel }}</span>
-      </div>
-      <div class="film-sim">{{ recipe.settings.filmSimulation.replace(/_/g, ' ') }}</div>
-      <div class="tags">
-        <span v-for="t in recipe.tags.slice(0, 4)" :key="t" class="tag">{{ t }}</span>
-        <span v-if="recipe.tags.length > 4" class="tag muted">+{{ recipe.tags.length - 4 }}</span>
+      <div v-if="listMode" class="list-thumb" :style="photoStyle"></div>
+
+      <div class="meta">
+        <div class="header-row">
+          <span class="name">{{ recipe.name }}</span>
+          <span class="scenario-badge">{{ scenarioLabel }}</span>
+        </div>
+        <div class="film-sim">{{ recipe.settings.filmSimulation.replace(/_/g, ' ') }}</div>
+        <div class="tags">
+          <span v-for="t in recipe.tags.slice(0, 4)" :key="t" class="tag">{{ t }}</span>
+          <span v-if="recipe.tags.length > 4" class="tag muted">+{{ recipe.tags.length - 4 }}</span>
+        </div>
       </div>
 
       <div class="actions" @click.stop>
@@ -35,7 +39,7 @@ import { useRouter } from 'vue-router';
 import type { Recipe } from '@/stores/recipes';
 import SlotPicker from './SlotPicker.vue';
 
-const props = defineProps<{ recipe: Recipe }>();
+const props = defineProps<{ recipe: Recipe; listMode?: boolean }>();
 const router = useRouter();
 const pickerOpen = ref(false);
 
@@ -55,16 +59,19 @@ function openSlotPicker() { pickerOpen.value = true; }
 </script>
 
 <style scoped>
+/* --- Grid card --- */
 .card {
   border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
   background: var(--surface); cursor: pointer; transition: box-shadow .15s;
 }
 .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+
 .photo {
   height: 140px; background: var(--hover) center/cover no-repeat;
   display: flex; align-items: center; justify-content: center;
 }
 .no-photo { color: var(--text-muted); font-size: .8rem; }
+
 .body { padding: .85rem; }
 .header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .3rem; }
 .name { font-weight: 600; font-size: .95rem; }
@@ -85,4 +92,21 @@ function openSlotPicker() { pickerOpen.value = true; }
   border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer;
 }
 .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+/* --- List row overrides --- */
+.card-list {
+  border-radius: 8px;
+}
+.card-list .body {
+  display: flex; align-items: center; gap: 1rem; padding: .65rem .85rem;
+}
+.card-list .meta { flex: 1; min-width: 0; }
+.card-list .header-row { margin-bottom: .15rem; }
+.card-list .tags { margin-bottom: 0; }
+.card-list .actions { flex-shrink: 0; }
+
+.list-thumb {
+  width: 48px; height: 48px; border-radius: 6px; flex-shrink: 0;
+  background: var(--hover) center/cover no-repeat;
+}
 </style>

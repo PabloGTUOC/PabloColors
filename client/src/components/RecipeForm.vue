@@ -163,11 +163,19 @@
     <!-- Actions -->
     <div class="form-actions">
       <button class="btn-danger" v-if="!isNew" @click="confirmDelete">Delete</button>
+      <button v-if="!isNew" class="btn-secondary btn-push" @click="pickerOpen = true">Push to camera</button>
       <button class="btn-secondary" @click="$router.back()">Cancel</button>
       <button class="btn-primary" :disabled="saving" @click="save">{{ saving ? 'Saving…' : 'Save' }}</button>
     </div>
 
     <p v-if="saveError" class="error-msg">{{ saveError }}</p>
+
+    <SlotPicker
+      v-if="pickerOpen"
+      :recipe-name="form.name"
+      :settings="form.settings"
+      @close="pickerOpen = false"
+    />
   </div>
 </template>
 
@@ -177,6 +185,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useRecipeStore } from '@/stores/recipes';
 import type { Recipe, RecipeSettings } from '@/stores/recipes';
 import SliderField from './SliderField.vue';
+import SlotPicker from './SlotPicker.vue';
 
 const props = defineProps<{
   initial: Recipe | null;
@@ -195,6 +204,7 @@ const store = useRecipeStore();
 const isNew = computed(() => !props.recipeId);
 const saving = ref(false);
 const saveError = ref('');
+const pickerOpen = ref(false);
 const tagInput = ref('');
 const isDragging = ref(false);
 const photoInput = ref<HTMLInputElement | null>(null);
