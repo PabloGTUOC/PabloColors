@@ -1,0 +1,16 @@
+services:
+  pablocolors-app:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: pablocolors-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - /volume1/docker/pablocolors/data:/app/data
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATA_DIR=/app/data
