@@ -73,7 +73,7 @@ app.use('/api/v1/tags', requireAuth, tagsRouter);
 app.use('/photos', requireAuth, express.static(path.join(DATA_DIR, 'photos')));
 
 // Serve Vue SPA (static build)
-const CLIENT_DIST = path.join(__dirname, '../../client/dist');
+const CLIENT_DIST = path.join(__dirname, '../client/dist');
 if (fs.existsSync(CLIENT_DIST)) {
   app.use(express.static(CLIENT_DIST));
   app.get('*', (_req, res) => {

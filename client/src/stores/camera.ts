@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { cameraSession, isWebUSBSupported, WriteWarning } from '@/camera';
-import type { SlotInfo, RecipeSettings } from '@/camera';
+import type { SlotInfo, RecipeSettings as CameraRecipeSettings } from '@/camera';
+import type { RecipeSettings } from '@/stores/recipes';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -51,7 +52,9 @@ export const useCameraStore = defineStore('camera', () => {
     error.value = null;
     lastWarnings.value = [];
     try {
-      const warnings = await cameraSession.writeSlot(slot, name, settings);
+      // The app stores RecipeSettings with plain strings; the camera layer uses enums.
+      // They are structurally identical at runtime (enum values are strings), so the cast is safe.
+      const warnings = await cameraSession.writeSlot(slot, name, settings as unknown as CameraRecipeSettings);
       lastWarnings.value = warnings;
       // Refresh just the written slot
       const updated = await cameraSession.readSlot(slot);

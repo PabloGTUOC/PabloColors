@@ -35,6 +35,7 @@ import { ref } from 'vue';
 import { useCameraStore } from '@/stores/camera';
 import type { RecipeSettings } from '@/stores/recipes';
 
+
 const props = defineProps<{ recipeName: string; settings: RecipeSettings }>();
 const emit = defineEmits<{ close: [] }>();
 
@@ -50,7 +51,7 @@ async function push(slot: number) {
   pushing.value = true;
   result.value = null;
   try {
-    const warnings = await camera.pushToSlot(slot, props.recipeName, props.settings as never);
+    const warnings = await camera.pushToSlot(slot, props.recipeName, props.settings);
     if (warnings.length > 0) {
       result.value = { type: 'warn', message: `Written with ${warnings.length} warning(s): ${warnings.map(w => w.message).join('; ')}` };
     } else {
