@@ -9,6 +9,7 @@ import recipesRouter from './routes/recipes';
 import tagsRouter from './routes/tags';
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = Number(process.env.PORT) || 3000;
 const DATA_DIR = process.env.DATA_DIR ?? './data';
 
@@ -26,7 +27,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' ? 'auto' : false,
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   },
 }));
