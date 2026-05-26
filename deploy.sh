@@ -12,7 +12,7 @@ ADMIN_USERNAME="pablo"
 ADMIN_PASSWORD_HASH='$2b$12$SM.lwirHWJFDg1jLpu9Ra.iAo8f8vuJDEy0A20kQITezS1VNbygNu'
 # Generate session secret with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 SESSION_SECRET="adb503068dc165745c8f255c90fc76a8ce359100ab210d33cc109d2768aa02ab"
-PORT="3000"
+PORT="3003"
 # ---------------------
 
 echo "→ Building pablocolors-app image (linux/amd64)..."
