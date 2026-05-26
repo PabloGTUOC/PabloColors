@@ -39,10 +39,11 @@ function toggle(tag: string) {
 <style scoped>
 .tag-filter { display: flex; flex-wrap: wrap; gap: .5rem; }
 .chip {
-  padding: .3rem .7rem; border: 1px solid var(--border); border-radius: 999px;
-  background: transparent; color: var(--text-muted); cursor: pointer; font-size: .8rem;
+  padding: .35rem .75rem; border: 1.5px solid var(--border); border-radius: 999px;
+  background: transparent; color: var(--text); cursor: pointer; font-size: .78rem;
+  font-weight: 700; text-transform: uppercase;
 }
-.chip:hover { border-color: var(--accent); color: var(--accent); }
-.chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.cnt { opacity: .7; }
+.chip:hover { background: var(--hover); }
+.chip.active { background: var(--border); color: var(--surface); border-color: var(--border); }
+.cnt { opacity: .7; margin-left: 2px; }
 </style>

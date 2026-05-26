@@ -60,22 +60,48 @@ function newRecipe() {
 .main { flex: 1; padding: 1.5rem; overflow-y: auto; }
 .toolbar { display: flex; gap: .75rem; margin-bottom: 1rem; align-items: center; }
 .search-input {
-  flex: 1; padding: .55rem .75rem; border: 1px solid var(--border);
-  border-radius: 6px; background: var(--bg); color: var(--text); font-size: .95rem;
+  flex: 1; padding: .75rem 1rem; border: 2.5px solid var(--border);
+  border-radius: 10px; background: var(--surface); color: var(--text); font-size: .95rem;
+  font-weight: 700;
 }
-.search-input:focus { outline: none; border-color: var(--accent); }
+.search-input:focus { outline: none; border-color: var(--border); }
 .tag-filter { margin-bottom: 1rem; }
 
-.view-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.view-toggle { display: flex; border: 2.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); }
 .view-toggle button {
-  padding: .45rem .6rem; border: none; background: transparent;
-  color: var(--text-muted); cursor: pointer; font-size: 1rem; line-height: 1;
+  padding: .5rem .75rem; border: none; background: transparent;
+  color: var(--text); cursor: pointer; font-size: 1.1rem; line-height: 1;
+  font-weight: 800;
 }
 .view-toggle button:hover { background: var(--hover); }
-.view-toggle button.active { background: var(--accent-subtle); color: var(--accent); }
+.view-toggle button.active { background: var(--border); color: var(--surface); }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-.list { display: flex; flex-direction: column; gap: .5rem; }
+.btn-primary {
+  background: var(--border);
+  color: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 3px 3px 0 var(--border);
+  transition: transform 0.1s, box-shadow 0.1s;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--border);
+}
+.btn-primary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border);
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+.list { display: flex; flex-direction: column; gap: .75rem; }
 
 .state-msg { padding: 2rem; text-align: center; color: var(--text-muted); }
 .state-msg.error { color: var(--danger); }

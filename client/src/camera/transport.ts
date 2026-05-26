@@ -39,6 +39,7 @@ export class Transport {
   private device: USBDevice | null = null;
   private inEndpoint = 0;
   private outEndpoint = 0;
+  private rxBuffer = new Uint8Array(0);
 
   async connect(): Promise<string> {
     if (!isWebUSBSupported()) throw new USBError('not-supported', 'WebUSB is not available');
@@ -61,10 +62,12 @@ export class Transport {
     }
 
     this.device = device;
+    this.rxBuffer = new Uint8Array(0);
     return device.productName ?? 'Unknown Camera';
   }
 
   async disconnect(): Promise<void> {
+    this.rxBuffer = new Uint8Array(0);
     if (!this.device) return;
     try {
       await this.device.releaseInterface(0);
@@ -85,7 +88,7 @@ export class Transport {
     }
   }
 
-  private async recv(): Promise<ArrayBuffer> {
+  private async recvChunk(): Promise<Uint8Array> {
     if (!this.device) throw new USBError('other', 'Not connected');
     const result = await withTimeout<USBInTransferResult>(
       this.device.transferIn(this.inEndpoint, 65536),
@@ -93,15 +96,56 @@ export class Transport {
     );
     if (!result.data) throw new USBError('other', 'Empty USB response');
     const dv = result.data;
-    return dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength) as ArrayBuffer;
+    return new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength);
+  }
+
+  private appendRxBuffer(chunk: Uint8Array) {
+    const newBuf = new Uint8Array(this.rxBuffer.byteLength + chunk.byteLength);
+    newBuf.set(this.rxBuffer, 0);
+    newBuf.set(chunk, this.rxBuffer.byteLength);
+    this.rxBuffer = newBuf;
+  }
+
+  private async readNextContainer(): Promise<PTPContainerData> {
+    // Ensure we have at least the header (12 bytes)
+    while (this.rxBuffer.byteLength < 12) {
+      const chunk = await this.recvChunk();
+      this.appendRxBuffer(chunk);
+    }
+
+    const view = new DataView(this.rxBuffer.buffer, this.rxBuffer.byteOffset, this.rxBuffer.byteLength);
+    const totalLength = view.getUint32(0, true);
+
+    // Ensure we have the full container
+    while (this.rxBuffer.byteLength < totalLength) {
+      const chunk = await this.recvChunk();
+      this.appendRxBuffer(chunk);
+    }
+
+    // Slice out the container data
+    const containerBuf = this.rxBuffer.buffer.slice(
+      this.rxBuffer.byteOffset,
+      this.rxBuffer.byteOffset + totalLength
+    );
+
+    // Consume from rxBuffer
+    this.rxBuffer = this.rxBuffer.subarray(totalLength);
+
+    return unpackContainer(containerBuf);
   }
 
   /** Send a command and receive the response container */
   async sendCommand(container: PTPContainerData): Promise<PTPContainerData> {
     try {
       await this.send(packContainer(container));
-      const buf = await this.recv();
-      return unpackContainer(buf);
+      const first = await this.readNextContainer();
+      if (first.type === PTP_TYPE.Data) {
+        // Data-In transaction: read the subsequent Response container
+        const resp = await this.readNextContainer();
+        first.code = resp.code;
+        first.params = resp.params;
+      }
+      return first;
     } catch (err) {
       throw mapUSBError(err);
     }
@@ -121,8 +165,7 @@ export class Transport {
       };
       await this.send(packContainer(dataContainer));
 
-      const buf = await this.recv();
-      return unpackContainer(buf);
+      return await this.readNextContainer();
     } catch (err) {
       throw mapUSBError(err);
     }

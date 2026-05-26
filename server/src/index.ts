@@ -65,6 +65,21 @@ app.get('/api/v1/auth/me', requireAuth, (req, res) => {
   res.json({ username: req.session.userId });
 });
 
+// Debug logging endpoint
+app.post('/api/v1/debug/log', (req, res) => {
+  console.log('[CLIENT DEBUG]', JSON.stringify(req.body, null, 2));
+  try {
+    fs.writeFileSync(
+      path.join(__dirname, '../../debug_preset.json'),
+      JSON.stringify(req.body, null, 2),
+      'utf8'
+    );
+  } catch (err) {
+    console.error('Failed to write debug_preset.json', err);
+  }
+  res.json({ ok: true });
+});
+
 // Protected API routes
 app.use('/api/v1/recipes', requireAuth, recipesRouter);
 app.use('/api/v1/tags', requireAuth, tagsRouter);

@@ -55,7 +55,7 @@ export class CameraSession {
   private async openSession(): Promise<void> {
     if (this.sessionOpen) return;
     const resp = await this.transport.sendCommand(this.cmd(PTP_OP.OpenSession, [1]));
-    if (resp.params[0] !== PTP_RC.OK && resp.params[0] !== PTP_RC.SessionAlreadyOpen) {
+    if (resp.code !== PTP_RC.OK && resp.code !== PTP_RC.SessionAlreadyOpen) {
       // Stale session recovery: close, reset, retry
       await this.transport.sendCommand(this.cmd(PTP_OP.CloseSession));
       await this.transport.sendCommand(this.cmd(PTP_OP.OpenSession, [1]));
@@ -90,6 +90,7 @@ export class CameraSession {
   /** Decode raw prop bytes by length heuristic — PTP string, uint32, uint16, or hex */
   private decodePropValue(data: Uint8Array): number | string {
     if (data.length === 0) return 0;
+    if (data.length === 1 && data[0] === 0) return '';
 
     // PTP string: first byte is character count (including null terminator), then UTF-16LE chars
     const charCount = data[0]!;
@@ -122,8 +123,10 @@ export class CameraSession {
 
   private async getPropString(propId: number): Promise<string> {
     const data = await this.getPropRaw(propId);
+    if (data.length === 0) return '';
+    if (data.length === 1 && data[0] === 0) return '';
     const val = this.decodePropValue(data);
-    return typeof val === 'string' ? val : String(val);
+    return typeof val === 'string' ? val : '';
   }
 
   private async setPropNum(propId: number, value: number, byteSize: 2 | 4 = 2): Promise<boolean> {
@@ -137,7 +140,7 @@ export class CameraSession {
         this.cmd(PTP_OP.SetDevicePropValue, [propId]),
         new Uint8Array(buf),
       );
-      return resp.params[0] === PTP_RC.OK;
+      return resp.code === PTP_RC.OK;
     } catch {
       return false; // non-fatal
     }
@@ -158,7 +161,7 @@ export class CameraSession {
         this.cmd(PTP_OP.SetDevicePropValue, [propId]),
         new Uint8Array(buf),
       );
-      return resp.params[0] === PTP_RC.OK;
+      return resp.code === PTP_RC.OK;
     } catch {
       return false;
     }
@@ -171,6 +174,7 @@ export class CameraSession {
 
       for (let slot = 1; slot <= 7; slot++) {
         await this.setPropNum(PROP_SLOT_SELECT, slot);
+        await new Promise(r => setTimeout(r, 100)); // Allow camera state to settle
         const name = await this.getPropString(PROP_SLOT_NAME);
 
         const props = new Map<number, number>();
@@ -189,6 +193,7 @@ export class CameraSession {
   readSlot(slot: number): Promise<SlotInfo> {
     return this.enqueue(async () => {
       await this.setPropNum(PROP_SLOT_SELECT, slot);
+      await new Promise(r => setTimeout(r, 100)); // Allow camera state to settle
       const name = await this.getPropString(PROP_SLOT_NAME);
 
       const props = new Map<number, number>();
@@ -206,6 +211,7 @@ export class CameraSession {
       const warnings: WriteWarning[] = [];
 
       await this.setPropNum(PROP_SLOT_SELECT, slot);
+      await new Promise(r => setTimeout(r, 100)); // Allow camera state to settle
 
       const nameOk = await this.setPropString(PROP_SLOT_NAME, name);
       if (!nameOk) warnings.push(new WriteWarning(PROP_SLOT_NAME, 'Failed to write slot name'));
@@ -215,6 +221,7 @@ export class CameraSession {
         if (!ok) {
           warnings.push(new WriteWarning(propId, `Failed to write prop 0x${propId.toString(16).toUpperCase()}`));
         }
+        await new Promise(r => setTimeout(r, 30)); // 30ms inter-write delay to allow camera state to settle
       }
 
       return warnings;

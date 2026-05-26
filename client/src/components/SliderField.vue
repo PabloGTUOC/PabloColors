@@ -1,7 +1,8 @@
 <template>
   <div class="field" :class="{ disabled: props.disabled }" :title="props.disabledHint ?? ''">
-    <label>{{ props.label }} ({{ displayValue }})</label>
+    <label :for="sliderId">{{ props.label }} ({{ displayValue }})</label>
     <input
+      :id="sliderId"
       type="range"
       :min="props.min"
       :max="props.max"
@@ -28,6 +29,8 @@ const props = defineProps<{
 
 defineEmits<{ 'update:modelValue': [value: number] }>();
 
+const sliderId = 'slider-' + Math.random().toString(36).substring(2, 9);
+
 const displayValue = computed(() => {
   const v = props.modelValue;
   return v > 0 ? `+${v}` : String(v);
@@ -37,6 +40,6 @@ const displayValue = computed(() => {
 <style scoped>
 .field { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; }
 .field.disabled { opacity: .45; pointer-events: none; }
-label { font-size: .85rem; color: var(--text-muted); font-weight: 500; }
+label { font-size: 11px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em; }
 input[type="range"] { width: 100%; }
 </style>

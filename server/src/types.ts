@@ -43,10 +43,9 @@ export enum WhiteBalance {
   AutoAmbient = 'AUTO_AMBIENT',
   Daylight = 'DAYLIGHT',
   Shade = 'SHADE',
-  FluorescentD = 'FL_D',
-  FluorescentN = 'FL_N',
-  FluorescentW = 'FL_W',
-  FluorescentWW = 'FL_WW',
+  Fluorescent1 = 'FL1',
+  Fluorescent2 = 'FL2',
+  Fluorescent3 = 'FL3',
   Incandescent = 'INCANDESCENT',
   Underwater = 'UNDERWATER',
   ColorTemp = 'COLOR_TEMP',
@@ -55,7 +54,9 @@ export enum WhiteBalance {
   Custom3 = 'CUSTOM3',
 }
 
-export enum DynamicRange { DR100 = 100, DR200 = 200, DR400 = 400 }
+export enum DynamicRange { Auto = 0, DR100 = 100, DR200 = 200, DR400 = 400 }
+
+export enum DRangePriority { Off = 0, Auto = 1, Weak = 2, Strong = 3 }
 
 export interface RecipeSettings {
   filmSimulation: FilmSimulation;
@@ -68,6 +69,7 @@ export interface RecipeSettings {
   wbShiftRed: number;
   wbShiftBlue: number;
   dynamicRange: DynamicRange;
+  dRangePriority: DRangePriority;
   highlightTone: number;
   shadowTone: number;
   color: number;

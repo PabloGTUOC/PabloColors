@@ -12,6 +12,7 @@ export interface RecipeSettings {
   wbShiftRed: number;
   wbShiftBlue: number;
   dynamicRange: number;
+  dRangePriority: number;
   highlightTone: number;
   shadowTone: number;
   color: number;

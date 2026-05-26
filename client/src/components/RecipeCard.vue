@@ -61,52 +61,67 @@ function openSlotPicker() { pickerOpen.value = true; }
 <style scoped>
 /* --- Grid card --- */
 .card {
-  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-  background: var(--surface); cursor: pointer; transition: box-shadow .15s;
+  border: 3px solid var(--border); border-radius: 16px; overflow: hidden;
+  background: var(--surface); cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 5px 5px 0 var(--border);
 }
-.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--border); }
 
 .photo {
   height: 140px; background: var(--hover) center/cover no-repeat;
   display: flex; align-items: center; justify-content: center;
+  border-bottom: 3px solid var(--border);
 }
-.no-photo { color: var(--text-muted); font-size: .8rem; }
+.no-photo { color: var(--text-muted); font-size: .8rem; font-weight: 700; text-transform: uppercase; }
 
-.body { padding: .85rem; }
-.header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .3rem; }
-.name { font-weight: 600; font-size: .95rem; }
+.body { padding: 1.2rem; }
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .4rem; }
+.name { font-weight: 800; font-size: 1.05rem; text-transform: uppercase; color: var(--text); }
 .scenario-badge {
-  font-size: .7rem; padding: .15rem .5rem; border-radius: 999px;
-  background: var(--accent-subtle); color: var(--accent); white-space: nowrap;
+  font-size: .7rem; padding: .2rem .6rem; border-radius: 999px;
+  border: 1.5px solid currentColor; color: var(--accent); background: transparent;
+  font-weight: 800; text-transform: uppercase; white-space: nowrap;
 }
-.film-sim { font-size: .8rem; color: var(--text-muted); margin-bottom: .5rem; }
-.tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .75rem; }
+.film-sim { font-size: .82rem; color: var(--text); font-weight: 700; margin-bottom: .6rem; }
+.tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .85rem; }
 .tag {
-  font-size: .72rem; padding: .1rem .45rem; border-radius: 999px;
-  border: 1px solid var(--border); color: var(--text-muted);
+  font-size: .72rem; padding: .15rem .5rem; border-radius: 999px;
+  border: 1.5px solid var(--border); color: var(--text); font-weight: 700;
+  text-transform: uppercase; background: transparent;
 }
 .tag.muted { opacity: .6; }
 .actions { display: flex; justify-content: flex-end; }
 .btn-sm {
-  font-size: .78rem; padding: .3rem .65rem; border: 1px solid var(--border);
-  border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer;
+  font-size: .75rem; padding: .4rem .75rem; border: 2px solid var(--border);
+  border-radius: 8px; background: var(--border); color: var(--surface); cursor: pointer;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+  box-shadow: 2px 2px 0 var(--border);
+  transition: transform 0.05s, box-shadow 0.05s;
 }
-.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border);
+}
+.btn-sm:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border);
+}
 
 /* --- List row overrides --- */
 .card-list {
-  border-radius: 8px;
+  border-radius: 12px;
 }
 .card-list .body {
-  display: flex; align-items: center; gap: 1rem; padding: .65rem .85rem;
+  display: flex; align-items: center; gap: 1rem; padding: .85rem 1.2rem;
 }
 .card-list .meta { flex: 1; min-width: 0; }
-.card-list .header-row { margin-bottom: .15rem; }
+.card-list .header-row { margin-bottom: .2rem; }
 .card-list .tags { margin-bottom: 0; }
 .card-list .actions { flex-shrink: 0; }
 
 .list-thumb {
-  width: 48px; height: 48px; border-radius: 6px; flex-shrink: 0;
+  width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0;
   background: var(--hover) center/cover no-repeat;
+  border: 2px solid var(--border);
 }
 </style>

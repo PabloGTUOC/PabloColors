@@ -42,38 +42,66 @@ function select(value: string) {
 .scenario-nav {
   display: flex;
   flex-direction: column;
-  padding: 1rem .5rem;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  gap: 2px;
+  padding: 1.5rem 1rem;
+  border-right: 2.5px solid var(--border);
+  background: transparent;
+  gap: 8px;
 }
 .scenario-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .5rem .75rem;
-  border: none;
-  background: transparent;
-  color: var(--text);
+  padding: .65rem 1rem;
+  border: 2px solid var(--border);
+  background: var(--border);
+  color: var(--surface);
   cursor: pointer;
-  border-radius: 6px;
-  font-size: .9rem;
+  border-radius: 10px;
+  font-size: .85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   text-align: left;
   width: 100%;
+  transition: transform 0.05s;
 }
-.scenario-item:hover { background: var(--hover); }
-.scenario-item.active { background: var(--accent-subtle); color: var(--accent); font-weight: 600; }
-.count { font-size: .75rem; color: var(--text-muted); }
+.scenario-item:hover {
+  transform: translate(-1px, -1px);
+}
+.scenario-item.active {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--border);
+  box-shadow: 3px 3px 0 var(--border);
+  font-weight: 800;
+}
+.scenario-item.active:hover {
+  transform: none;
+}
+.count {
+  font-size: .72rem;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 9999px;
+  font-weight: 800;
+  padding: 2px 8px;
+  line-height: 1;
+}
+.scenario-item.active .count {
+  background: var(--border);
+  color: var(--surface);
+}
 
 @media (max-width: 640px) {
   .scenario-nav {
     flex-direction: row;
     overflow-x: auto;
     border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: .5rem;
+    border-bottom: 2.5px solid var(--border);
+    padding: .75rem;
+    gap: 8px;
   }
-  .scenario-item { white-space: nowrap; flex-shrink: 0; }
+  .scenario-item { white-space: nowrap; flex-shrink: 0; width: auto; }
   .count { display: none; }
 }
 </style>

@@ -81,34 +81,59 @@ async function pullSlot(slot: number) {
 <style scoped>
 .camera-panel {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-  background: var(--surface); border-top: 1px solid var(--border);
-  padding: .6rem 1.25rem; font-size: .85rem;
+  background: var(--surface); border-top: 3px solid var(--border);
+  padding: .8rem 1.5rem; font-size: .85rem;
 }
-.banner-static { color: var(--text-muted); text-align: center; padding: .25rem 0; }
+.banner-static { color: var(--text-muted); text-align: center; padding: .25rem 0; font-weight: 700; text-transform: uppercase; }
 .status-row { display: flex; align-items: center; gap: .75rem; }
 .status-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0;
+  width: 12px; height: 12px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0;
+  border: 1.5px solid var(--border);
 }
 .status-dot.connected { background: #22c55e; }
 .status-dot.connecting { background: #f59e0b; }
 .status-dot.error { background: var(--danger); }
-.status-label { font-weight: 500; }
-.camera-error { color: var(--danger); font-size: .8rem; flex: 1; }
+.status-label { font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
+.camera-error { color: var(--danger); font-size: .8rem; flex: 1; font-weight: 700; text-transform: uppercase; }
 .actions { margin-left: auto; display: flex; gap: .5rem; }
 .btn-cam {
-  padding: .3rem .7rem; border: 1px solid var(--border); border-radius: 6px;
-  background: transparent; color: var(--text); cursor: pointer; font-size: .8rem;
+  padding: .4rem 1rem; border: 2px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--text); cursor: pointer; font-size: .8rem;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em;
+  box-shadow: 2px 2px 0 var(--border);
+  transition: transform 0.05s, box-shadow 0.05s;
 }
-.btn-cam:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn-cam:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border);
+  background: var(--hover);
+}
+.btn-cam:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border);
+}
 .btn-cam:disabled { opacity: .5; cursor: not-allowed; }
-.btn-disconnect:hover { border-color: var(--danger) !important; color: var(--danger) !important; }
-.slots-row { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+.btn-disconnect:hover {
+  background: var(--danger);
+  color: #ffffff;
+}
+.slots-row { display: flex; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
 .slot {
   display: flex; flex-direction: column; align-items: center; gap: .1rem;
-  padding: .35rem .6rem; border: 1px solid var(--border); border-radius: 6px;
-  cursor: pointer; min-width: 52px;
+  padding: .4rem .8rem; border: 2px solid var(--border); border-radius: 8px;
+  cursor: pointer; min-width: 64px; background: var(--surface);
+  box-shadow: 2px 2px 0 var(--border);
+  transition: transform 0.05s, box-shadow 0.05s;
 }
-.slot:hover { border-color: var(--accent); }
-.slot-label { font-weight: 700; font-size: .8rem; color: var(--accent); }
-.slot-name { font-size: .68rem; color: var(--text-muted); }
+.slot:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border);
+  background: var(--hover);
+}
+.slot:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border);
+}
+.slot-label { font-weight: 800; font-size: .8rem; color: var(--accent); }
+.slot-name { font-size: .68rem; color: var(--text); font-weight: 700; text-transform: uppercase; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
