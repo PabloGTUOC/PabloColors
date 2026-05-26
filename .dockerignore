@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+.git
+.gitignore
+scratch
+*.tar.gz
+deploy.sh
+.DS_Store
+**/.DS_Store
