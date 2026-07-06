@@ -9,7 +9,7 @@
       <div class="status-row">
         <span class="status-dot" :class="statusClass"></span>
         <span class="status-label">{{ statusLabel }}</span>
-        <span v-if="camera.error" class="camera-error">{{ camera.error }}</span>
+        <span v-if="camera.error" class="camera-error" :title="camera.error">{{ shortError }}</span>
         <div class="actions">
           <button v-if="camera.connectionState !== 'connected'" class="btn-cam" :disabled="camera.connectionState === 'connecting'" @click="camera.connect()">
             {{ camera.connectionState === 'connecting' ? 'Connecting…' : 'Connect camera' }}
@@ -57,6 +57,17 @@ const statusLabel = computed(() => {
   if (camera.connectionState === 'connecting') return 'Connecting…';
   if (camera.connectionState === 'error') return 'Connection error';
   return 'No camera';
+});
+
+// Show a concise one-liner; full message available on hover (title attr)
+const shortError = computed(() => {
+  const e = camera.error ?? '';
+  if (e.includes('Unable to claim') || e.includes('claimInterface')) {
+    return 'Interface busy — quit Image Capture/Photos, check camera USB mode';
+  }
+  if (e.includes('No device selected') || e.includes('cancelled')) return 'No device selected';
+  // Truncate long raw messages
+  return e.length > 80 ? e.slice(0, 77) + '…' : e;
 });
 
 function slotName(slot: number) {

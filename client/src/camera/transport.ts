@@ -24,7 +24,7 @@ function mapUSBError(err: unknown): USBError {
   const msg = err instanceof Error ? err.message : String(err);
   if (msg.includes('cancelled') || msg.includes('No device selected')) return new USBError('cancelled', msg);
   if (msg.includes('SecurityError')) return new USBError('security', msg);
-  if (msg.includes('busy')) return new USBError('busy', msg);
+  if (msg.includes('busy') || msg.includes('claimInterface') || msg.includes('claim')) return new USBError('busy', msg);
   return new USBError('other', msg);
 }
 
@@ -37,6 +37,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 
 export class Transport {
   private device: USBDevice | null = null;
+  private claimedInterface = 0;
   private inEndpoint = 0;
   private outEndpoint = 0;
   private rxBuffer = new Uint8Array(0);
@@ -47,12 +48,29 @@ export class Transport {
     const device = await navigator.usb.requestDevice({ filters: [{ vendorId: FUJI_VENDOR_ID }] });
     await device.open();
 
+    // Always select configuration — required after a stale session or first connect
     if (device.configuration === null) {
       await device.selectConfiguration(1);
     }
 
     const iface = device.configuration!.interfaces[0]!;
-    await device.claimInterface(iface.interfaceNumber);
+
+    try {
+      await device.claimInterface(iface.interfaceNumber);
+    } catch (err) {
+      await device.close();
+      const msg = err instanceof Error ? err.message : String(err);
+      // On macOS the PTP kernel driver auto-claims the interface when the camera connects.
+      // The user must quit Image Capture / Photos and set the camera to PC Connection mode.
+      throw new USBError(
+        'busy',
+        'Unable to claim the camera interface. ' +
+        'On Mac: quit Image Capture and Photos, then reconnect the camera. ' +
+        'On the camera: set USB mode to "USB RAW Conv./Remote Control" (PC Connection).',
+      );
+    }
+
+    this.claimedInterface = iface.interfaceNumber;
 
     for (const endpoint of iface.alternate.endpoints) {
       if (endpoint.type === 'bulk') {
@@ -70,7 +88,7 @@ export class Transport {
     this.rxBuffer = new Uint8Array(0);
     if (!this.device) return;
     try {
-      await this.device.releaseInterface(0);
+      await this.device.releaseInterface(this.claimedInterface);
       await this.device.close();
     } catch { /* ignore close errors */ }
     this.device = null;
